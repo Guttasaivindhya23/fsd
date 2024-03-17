@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hotel Information</title>
+    <style>
+        .hotel {
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+        .hotel img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+<form id="registrationForm">
+    <label for="email">Email:</label>
+    <input type="email" id="email" required>
+    <button type="submit">Register</button>
+</form>
+
+<form id="bookingForm" style="display: none;">
+    <label for="persons">Number of Persons:</label>
+    <input type="number" id="persons" required>
+    <label for="roomType">Room Type:</label>
+    <select id="roomType">
+        <option value="normal">Normal</option>
+        <option value="deluxe">Deluxe</option>
+    </select>
+    <button type="submit">Search Hotels</button>
+</form>
+
+<div id="hotelList"></div>
+
+<script>
+    // Mock user registration
+    let userEmail = null;
+
+    document.getElementById('registrationForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        userEmail = document.getElementById('email').value;
+        document.getElementById('registrationForm').style.display = 'none';
+        document.getElementById('bookingForm').style.display = 'block'; // Display the booking form after registration
+    });
+
+    document.getElementById('bookingForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const persons = parseInt(document.getElementById('persons').value);
+        const roomType = document.getElementById('roomType').value;
+
+        if (persons < 1 || isNaN(persons)) {
+            alert('Please enter a valid number of persons.');
+            return;
+        }
+
+        // Mock hotel data with separate image paths for normal and deluxe rooms
+        let hotels = [
+            { 
+                name: 'Srikrishna', 
+                normalRooms: 4, 
+                deluxRooms: 2, 
+                normalRoomImage: 'srinor.jpg',
+                deluxRoomImage: 'sriexc.jpg'
+            },
+            { 
+                name: 'Suraj', 
+                normalRooms: 6, 
+                deluxRooms: 1, 
+                normalRoomImage: 'surnor.jpg',
+                deluxRoomImage: 'surexc.jpg'
+            },
+{ 
+                name: 'varsha', 
+                normalRooms: 3, 
+                deluxRooms: 6, 
+                normalRoomImage: 'varnor.jpg',
+                deluxRoomImage: 'varexc.jpg'
+            },
+{ 
+                name: 'toyota', 
+                normalRooms: 3, 
+                deluxRooms: 0, 
+                normalRoomImage: 'toynor.jpg',
+                deluxRoomImage: 'toyexc.jpg'
+            },
+{ 
+                name: 'masineni', 
+                normalRooms: 7, 
+                deluxRooms: 2, 
+                normalRoomImage: 'masnor.jpg',
+                deluxRoomImage: 'masexc.jpg'
+            },
+            // Add more hotels with their respective images
+        ];
+
+        let availableHotels = hotels.filter(hotel => {
+            if (roomType === 'normal') {
+                return persons <= hotel.normalRooms * 2;
+            } else if (roomType === 'deluxe') {
+                return persons <= hotel.deluxRooms * 2;
+            }
+        });
+
+        if (availableHotels.length === 0) {
+            document.getElementById('hotelList').innerHTML = '<p>No available hotels for the specified number of persons and room type.</p>';
+        } else {
+            const hotelListHTML = availableHotels.map(hotel => {
+                return `<div class="hotel">
+                            <h3>${hotel.name}</h3>
+                            <img src="${roomType === 'normal' ? hotel.normalRoomImage : hotel.deluxRoomImage}" alt="${hotel.name} ${roomType === 'normal' ? 'Normal' : 'Deluxe'} Room">
+                            <p>${roomType === 'normal' ? 'Normal' : 'Deluxe'} Rooms: ${roomType === 'normal' ? hotel.normalRooms : hotel.deluxRooms}</p>
+                            <button class="bookButton" data-hotel="${hotel.name}">Book</button>
+                        </div>`;
+            }).join('');
+            document.getElementById('hotelList').innerHTML = hotelListHTML;
+
+            // Add event listeners to book buttons
+            const bookButtons = document.querySelectorAll('.bookButton');
+            bookButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const hotelName = this.getAttribute('data-hotel');
+                    bookHotel(userEmail, hotelName);
+                    updateAvailableRooms(hotelName, roomType);
+                });
+            });
+        }
+    });
+
+    // Mock booking function
+    function bookHotel(email, hotelName) {
+        alert(`Booking confirmed for hotel ${hotelName} for user ${email}.`);
+    }
+
+    // Mock function to update available rooms after booking
+    function updateAvailableRooms(hotelName, roomType) {
+        // Update the available rooms data based on the booked hotel and room type
+        // This could involve reducing the available room count for the booked hotel
+        // and room type so that it's not available for further bookings
+    }
+</script>
+
+</body>
+</html>
